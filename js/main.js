@@ -205,6 +205,42 @@ function renderQuizSections() {
   `).join("");
 }
 
+function renderAvailableQuizzes() {
+  const target = document.querySelector("#available-quizzes");
+  if (!target) return;
+
+  const available = Object.entries(SUBJECTS).flatMap(([subjectKey, subject]) =>
+    subject.chapters
+      .map((title, index) => ({
+        title,
+        index,
+        subjectTitle: subject.title,
+        link: quizLinkFor(subjectKey, title)
+      }))
+      .filter((quiz) => quiz.link)
+  );
+
+  target.innerHTML = `
+    <section class="content-block" id="available-quizzes-list">
+      <div class="section-heading compact">
+        <h2>Available Quizzes</h2>
+        <p>Start the exams that are ready now.</p>
+      </div>
+      <div class="card-grid four">
+        ${available.map((quiz) => `
+          <article class="card">
+            <span class="tag">${quiz.subjectTitle}</span>
+            <span class="chapter-number">${quiz.index + 1}</span>
+            <h3>${quiz.title}</h3>
+            <p>${quiz.subjectTitle} exam form is available.</p>
+            <a class="btn btn-card" href="${quiz.link}" target="_blank" rel="noopener">Start Quiz</a>
+          </article>
+        `).join("")}
+      </div>
+    </section>
+  `;
+}
+
 function findChapterBySlug(slug) {
   for (const [subjectKey, subject] of Object.entries(SUBJECTS)) {
     const index = subject.chapters.findIndex((title) => chapterSlug(subjectKey, title) === slug);
@@ -550,6 +586,7 @@ setupMenu();
 setupBackToTop();
 setupCopyButtons();
 renderChapterList();
+renderAvailableQuizzes();
 renderQuizSections();
 renderFormulaPage();
 setupIcons();
